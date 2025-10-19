@@ -4,7 +4,7 @@ extends CharacterBody2D
 # OwenPlatformerController2D
 # A simple platformer character controller for 2D games.
 # version 1.0
-# last updated: 2025-10-18
+# last updated: 2025-10-19
 
 ## Your maximum horizontal speed.
 @export var speed: float = 300.0
