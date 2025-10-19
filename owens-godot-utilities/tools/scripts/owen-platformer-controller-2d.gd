@@ -38,7 +38,13 @@ var jump_buffer_timer: float = 0.0
 var wall_jump_timer = 0
 
 # Animation Variables
+## TODO: Generalize
 @onready var anim_player: AnimationPlayer = $AnimationPlayer
+
+@export var IdleAnimString : String = "player_idle"
+@export var WalkAnimString : String = "player_walk"
+@export var JumpAnimString : String = "player_jump"
+
 enum ANIM_STATE {
 	IDLE,
 	WALK,
@@ -58,14 +64,10 @@ func _physics_process(delta: float) -> void:
 		velocity = Vector2.ZERO
 		return
 
-	if cur_state == CHARACTER_STATE.TRANSITIONING:
-		velocity = Vector2(0, -1) * speed * 2
-		move_and_slide()
-		return
-
 	var acc = acceleration
 	var fric = friction
 
+	# Todo: have more effecient way of doing this
 	if is_on_floor():
 		coyote_timer = coyote_time
 	else:
@@ -104,32 +106,33 @@ func _physics_process(delta: float) -> void:
 			
 	move_and_slide()
 
-	# animation
-	var new_anim_state: ANIM_STATE
-	if is_on_floor():
-		if input_axis != 0:
-			new_anim_state = ANIM_STATE.WALK
+	# Animation Logic. Will skip entirely if no anim_player is assigned
+	if anim_player:
+		var new_anim_state: ANIM_STATE
+		if is_on_floor():
+			if input_axis != 0:
+				new_anim_state = ANIM_STATE.WALK
+			else:
+				new_anim_state = ANIM_STATE.IDLE
 		else:
-			new_anim_state = ANIM_STATE.IDLE
-	else:
-		new_anim_state = ANIM_STATE.JUMP
+			new_anim_state = ANIM_STATE.JUMP
 
-	if new_anim_state != anim_state:
-		anim_state = new_anim_state
-		anim_player.stop()
-		# TODO: remove Nicole references
-		match new_anim_state:
-			ANIM_STATE.IDLE:
-				anim_player.play("nicole_idle")
-			ANIM_STATE.WALK:
-				anim_player.play("nicole_walk")
-			ANIM_STATE.JUMP:
-				anim_player.play("nicole_jump")
-		
-	if input_axis < 0:
-		$Sprite2D.flip_h = false
-	elif input_axis > 0:
-		$Sprite2D.flip_h = true
+		if new_anim_state != anim_state:
+			anim_state = new_anim_state
+			anim_player.stop()
+
+			match new_anim_state:
+				ANIM_STATE.IDLE:
+					anim_player.play(IdleAnimString)
+				ANIM_STATE.WALK:
+					anim_player.play(WalkAnimString)
+				ANIM_STATE.JUMP:
+					anim_player.play(JumpAnimString)
+
+		if input_axis < 0:
+			$Sprite2D.flip_h = false
+		elif input_axis > 0:
+			$Sprite2D.flip_h = true
 
 func _jump():
 	velocity.y = jump_velocity
@@ -137,11 +140,13 @@ func _jump():
 	coyote_timer = 0
 	wall_coyote_timer = 0
 
+# Todo: make hit function more general
 func hit():
 	if cur_state == CHARACTER_STATE.ACTIVE:
 		set_state(CHARACTER_STATE.RESPAWNING)
 		GameManager.reload_level()
 
+# TODO: add unloading state logic
 func set_state(state: CHARACTER_STATE) -> void:
 	if cur_state == state:
 		return
