@@ -121,6 +121,7 @@ func _physics_process(delta: float) -> void:
 	if new_anim_state != anim_state:
 		anim_state = new_anim_state
 		anim_player.stop()
+		# TODO: remove Nicole references
 		match new_anim_state:
 			ANIM_STATE.IDLE:
 				anim_player.play("nicole_idle")
