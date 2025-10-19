@@ -4,7 +4,11 @@ extends CharacterBody2D
 # OwenPlatformerController2D
 # A simple platformer character controller for 2D games.
 # version 1.0
+<<<<<<< HEAD:owens-godot-utilities/tools/scripts/owen-platformer-controller-2d.gd
 # last updated: 2025-10-19
+=======
+# last updated: 2025-10-18
+>>>>>>> 944ca231ed48550439ae4ced31a43b2e29c44f99:scripts/owen-platformer-controller-2d.gd
 
 ## Your maximum horizontal speed.
 @export var speed: float = 300.0
