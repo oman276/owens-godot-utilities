@@ -1,0 +1,25 @@
+[gd_scene load_steps=5 format=3 uid="uid://bokjajcbkuhb6"]
+
+[ext_resource type="Script" uid="uid://cek32sn2jkhxq" path="res://tools/scripts/owen-platformer-controller-2d.gd" id="1_n8y6f"]
+[ext_resource type="Texture2D" uid="uid://dkn7y71bnryy8" path="res://tools/assets/basic_colors.png" id="2_3yjkw"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xalop"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kxeuq"]
+atlas = ExtResource("2_3yjkw")
+region = Rect2(0, 1, 1, 1)
+
+[node name="OwenPlatformerController2D" type="CharacterBody2D"]
+scale = Vector2(1.5, 1.5)
+script = ExtResource("1_n8y6f")
+metadata/_custom_type_script = "uid://cek32sn2jkhxq"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_xalop")
+
+[node name="Sprite2D" type="Sprite2D" parent="CollisionShape2D"]
+texture_filter = 1
+position = Vector2(0, -5.9604645e-08)
+scale = Vector2(20, 20)
+texture = SubResource("AtlasTexture_kxeuq")
+metadata/_edit_group_ = true

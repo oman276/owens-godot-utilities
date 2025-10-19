@@ -62,8 +62,8 @@ func _ready():
 			loading_canvas = load(loading_canvas_path).instantiate()
 			add_child(loading_canvas)
 
-    
-    # todo: move this into the Mouse Reticle utility?
+	
+	# todo: move this into the Mouse Reticle utility?
 	#Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
 	#mouse_reticle_tscn = load("res://scenes/mouse_reticle.tscn")
 	#mouse_reticle = mouse_reticle_tscn.instantiate()
