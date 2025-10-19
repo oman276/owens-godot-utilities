@@ -140,7 +140,7 @@ func _jump():
 func hit():
 	if cur_state == CHARACTER_STATE.ACTIVE:
 		set_state(CHARACTER_STATE.RESPAWNING)
-		OwenGameManager.reload_level()
+		GameManager.reload_level()
 
 func set_state(state: CHARACTER_STATE) -> void:
 	if cur_state == state:
