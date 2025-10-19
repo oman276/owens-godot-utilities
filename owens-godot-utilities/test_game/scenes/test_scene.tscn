@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://cmofbo13qg4di"]
+
+[ext_resource type="PackedScene" uid="uid://blq7187l5a4s7" path="res://tools/scenes/OwenCamera.tscn" id="1_vel2i"]
+
+[node name="TestScene" type="Node2D"]
+
+[node name="OwenCamera" parent="." instance=ExtResource("1_vel2i")]
+script = null
