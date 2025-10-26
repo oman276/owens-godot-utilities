@@ -23,11 +23,13 @@ enum GameState {
 ## Add more levels as needed.
 enum Levels {
 	NONE,
+	OWEN_TEST_LEVEL,
 }
 
 ## This dictionary maps Levels enum values to their corresponding scene paths.
 var level_path_dict : Dictionary = {
 	Levels.NONE : "",
+	Levels.OWEN_TEST_LEVEL : "res://test_game/scenes/test_scene.tscn",
 }
 
 ## Loading
@@ -45,7 +47,7 @@ var loading_canvas_path : String = ""
 var loading_time : float = 0.1
 
 # The initial level to load when the game starts.
-var initial_level : Levels = Levels.NONE
+var initial_level : Levels = Levels.OWEN_TEST_LEVEL
 # The current global game state. The initial state is DEFAULT.
 var current_global_state : GameState = GameState.DEFAULT
 # The current level enum. Set to NONE by default. 
@@ -54,13 +56,18 @@ var current_level : Levels = Levels.NONE
 # The current level node instance, which we reference so we can unload it later.
 var current_level_node : Node2D = null
 
-# Mouse Reticle
-# We can define a custom mouse reticle to replace the system cursor.
-var mouse_reticle_path : String = "res://owens-godot-utilities/tools/scenes/OwenMouseReticle.tscn"
-# Set to true if you want to use a custom mouse reticle and have the mouse reticle setup.
-var load_custom_mouse : bool = false
-# The mouse reticle node to be saved here.
-var mouse_reticle : Control
+# Mouse Cursor
+# We can define a custom mouse cursor to replace the system cursor.
+var mouse_cursor_path : String = "res://tools/scenes/OwenMouseCursor.tscn"
+# Set to true if you want to use a custom mouse cursor and have the mouse cursor setup.
+var load_custom_mouse : bool = true
+# The mouse cursor node to be saved here.
+var mouse_cursor : OwenMouseCursor = null
+
+# Debug Controls
+# Activate this book to allow reloading the current level with a keypress.
+# The key is defined in the input map as "reload_current_level", by default R.
+var debug_reload_level : bool = true
 
 func _ready():
 	if uses_loading_screen:
@@ -71,10 +78,10 @@ func _ready():
 			add_child(loading_canvas)
 	
 	if load_custom_mouse:
-		var mouse_reticle_tscn = load(mouse_reticle_path)
-		mouse_reticle = mouse_reticle_tscn.instantiate()
-		add_child(mouse_reticle)
-	
+		var mouse_cursor_tscn = load(mouse_cursor_path)
+		mouse_cursor = mouse_cursor_tscn.instantiate() as OwenMouseCursor
+		add_child(mouse_cursor)
+
 	load_level(initial_level)
 
 ## Externally callable function to load a level by enum.
@@ -116,7 +123,7 @@ func custom_mouse_visible(mouse_visibility: bool) -> void:
 	if not load_custom_mouse:
 		push_warning("OwenGameManager: custom_mouse_visible called but load_custom_mouse is not enabled.")
 		return
-	mouse_reticle.visible = mouse_visibility
+	mouse_cursor.visible = mouse_visibility
 
 func _on_load_level(level : Levels) -> void:
 	# Implement any logic you want to happen when a level is loaded here.
@@ -129,3 +136,8 @@ func _on_unload_level(level : Levels) -> void:
 	# There may be general cleanup you want to do in all cases, or you can do 
 	# something specific on certain levels.
 	return
+
+func _process(_delta):
+	if debug_reload_level and Input.is_action_just_pressed("reload_current_level"):
+		print("OwenGameManager: Reloading current level via debug keypress.")
+		reload_level()
