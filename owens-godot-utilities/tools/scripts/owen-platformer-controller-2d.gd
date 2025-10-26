@@ -80,17 +80,17 @@ var anim_state: ANIM_STATE = ANIM_STATE.IDLE
 
 ## Each enum is a possible discrete animation state for the character.
 ## Add more as needed.
-enum CHARACTER_STATE {
+enum PLAYER_STATE {
 	ACTIVE,
 	RESPAWNING,
 	TRANSITIONING
 }
 ## The current state of the character.
-var cur_state: CHARACTER_STATE = CHARACTER_STATE.ACTIVE
+var cur_state: PLAYER_STATE = PLAYER_STATE.ACTIVE	
 
 func _physics_process(delta: float) -> void:
 	# If the character is respawning, freeze and skip all movement logic
-	if cur_state == CHARACTER_STATE.RESPAWNING:
+	if cur_state == PLAYER_STATE.RESPAWNING:
 		velocity = Vector2.ZERO
 		return
 
@@ -178,35 +178,35 @@ func _jump():
 	wall_coyote_timer = 0
 
 func hit():
-	if cur_state == CHARACTER_STATE.ACTIVE:
+	if cur_state == PLAYER_STATE.ACTIVE:
 		# Implement your hit logic here, such as reducing health or triggering animations
 		pass
 
-func set_state(state: CHARACTER_STATE) -> void:
+func set_state(state: PLAYER_STATE) -> void:
 	if cur_state == state:
 		return
 
 	# Reset any necessary variables for the new state
 	match cur_state:
-		CHARACTER_STATE.ACTIVE:
+		PLAYER_STATE.ACTIVE:
 			# Reset the character for the active state
 			pass
-		CHARACTER_STATE.RESPAWNING:
+		PLAYER_STATE.RESPAWNING:
 			# Reset the character for the respawning state
 			pass
-		CHARACTER_STATE.TRANSITIONING:
+		PLAYER_STATE.TRANSITIONING:
 			# Reset the character for the transitioning state
 			pass
 
 	# Set the new state, and update appropriate variables
 	cur_state = state
 	match state:
-		CHARACTER_STATE.ACTIVE:
+		PLAYER_STATE.ACTIVE:
 			# Set up the character for the active state
 			pass
-		CHARACTER_STATE.RESPAWNING:
+		PLAYER_STATE.RESPAWNING:
 			# Set up the character for the respawning state
 			pass
-		CHARACTER_STATE.TRANSITIONING:
+		PLAYER_STATE.TRANSITIONING:
 			# Set up the character for the transitioning state
 			pass
