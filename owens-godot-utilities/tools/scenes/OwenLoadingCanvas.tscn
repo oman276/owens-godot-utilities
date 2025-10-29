@@ -1,0 +1,40 @@
+[gd_scene load_steps=4 format=3 uid="uid://ysnme2weplc3"]
+
+[ext_resource type="Script" uid="uid://ctbm0xndduhhn" path="res://tools/scripts/owen_canvas_fade.gd" id="1_0bwqn"]
+
+[sub_resource type="Gradient" id="Gradient_lflwa"]
+offsets = PackedFloat32Array(0, 0.493506, 1)
+colors = PackedColorArray(0, 0, 0, 1, 0.344156, 0.344156, 0.344156, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_f6u11"]
+gradient = SubResource("Gradient_lflwa")
+
+[node name="LoadingCanvas" type="CanvasLayer"]
+
+[node name="TextureRect" type="TextureRect" parent="."]
+z_index = 100
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("GradientTexture1D_f6u11")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="TextureRect"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/normal_font_size = 61
+bbcode_enabled = true
+text = "
+
+
+[center]Loading...[/center]"
+
+[node name="CanvasFade" type="Node" parent="." node_paths=PackedStringArray("items_to_fade")]
+script = ExtResource("1_0bwqn")
+items_to_fade = [NodePath("../TextureRect")]
+fade_duration = 0.3

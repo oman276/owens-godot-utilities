@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://bey3qxjuh0qpj"]
+
+[ext_resource type="Texture2D" uid="uid://dkn7y71bnryy8" path="res://tools/assets/basic_colors.png" id="1_54e1i"]
+[ext_resource type="Script" uid="uid://iyrqs0nfudro" path="res://tools/scripts/owen_mouse_cursor.gd" id="1_dkxvc"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dkxvc"]
+atlas = ExtResource("1_54e1i")
+region = Rect2(1, 5, 1, 1)
+
+[node name="OwenMouseCursor" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_dkxvc")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+z_index = 100
+texture_filter = 1
+scale = Vector2(5, 5)
+texture = SubResource("AtlasTexture_dkxvc")
