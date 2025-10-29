@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://ysnme2weplc3"]
 
-[ext_resource type="Script" uid="uid://clbyqyeqoswr8" path="res://tools/scripts/owen_canvas_fade.gd" id="1_0bwqn"]
+[ext_resource type="Script" uid="uid://ctbm0xndduhhn" path="res://tools/scripts/owen_canvas_fade.gd" id="1_0bwqn"]
 
 [sub_resource type="Gradient" id="Gradient_lflwa"]
 offsets = PackedFloat32Array(0, 0.493506, 1)
@@ -34,5 +34,7 @@ text = "
 
 [center]Loading...[/center]"
 
-[node name="CanvasFade" type="Node" parent="."]
+[node name="CanvasFade" type="Node" parent="." node_paths=PackedStringArray("items_to_fade")]
 script = ExtResource("1_0bwqn")
+items_to_fade = [NodePath("../TextureRect")]
+fade_duration = 0.3
