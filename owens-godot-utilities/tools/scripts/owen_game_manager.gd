@@ -37,14 +37,15 @@ var level_path_dict : Dictionary = {
 ## Meant to be used with my Loading utiliities, but you can implement your own loading screen logic if you want.
 
 # Loading is set to off by default. Enable if if you have the rest of the loading screen system implemented.
-var uses_loading_screen : bool = false
+var uses_loading_screen : bool = true
 ## This is the canvas layer that will be used for the loading screen.
 var loading_canvas : CanvasLayer = null
 ## This is the string path to the loading canvas scene. Make sure to replace it yourself.
-## TODO: Add Loading System
-var loading_canvas_path : String = ""
+var loading_canvas_path : String = "res://tools/scenes/OwenLoadingCanvas.tscn"
 # Time to wait before actually loading the level, to allow for fade in effects.
 var loading_time : float = 0.1
+# The loading canvas fade node, if it exists.
+var loading_canvas_fade : OwenCanvasFade = null
 
 # The initial level to load when the game starts.
 var initial_level : Levels = Levels.OWEN_TEST_LEVEL
@@ -76,6 +77,8 @@ func _ready():
 		else:
 			loading_canvas = load(loading_canvas_path).instantiate()
 			add_child(loading_canvas)
+			# Get reference to OwenCanvasFade if it exists
+			loading_canvas_fade = _find_node_of_type(loading_canvas, "OwenCanvasFade") as OwenCanvasFade
 	
 	if load_custom_mouse:
 		var mouse_cursor_tscn = load(mouse_cursor_path)
@@ -98,7 +101,8 @@ func reload_level() -> void:
 ## Unload the current level and load a new one.
 func _force_load_level(new_level: Levels):
 	if uses_loading_screen and loading_canvas:
-		loading_canvas.fade_in()
+		if loading_canvas_fade:
+			loading_canvas_fade.fade_in()
 		await get_tree().create_timer(loading_time).timeout
 
 	if current_level_node:
@@ -116,8 +120,8 @@ func _force_load_level(new_level: Levels):
 		add_child(current_level_node)
 
 	_on_load_level(current_level)
-	if uses_loading_screen and loading_canvas:
-		loading_canvas.fade_out()
+	if uses_loading_screen and loading_canvas_fade:
+		loading_canvas_fade.fade_out()
 
 func custom_mouse_visible(mouse_visibility: bool) -> void:
 	if not load_custom_mouse:
@@ -137,7 +141,18 @@ func _on_unload_level(level : Levels) -> void:
 	# something specific on certain levels.
 	return
 
+# We use this to process debug inputs.
 func _process(_delta):
 	if debug_reload_level and Input.is_action_just_pressed("reload_current_level"):
 		print("OwenGameManager: Reloading current level via debug keypress.")
 		reload_level()
+
+# A helper function to find a node of a specific type in the scene tree.
+func _find_node_of_type(parent: Node, type: String) -> Node:
+	if parent.get_class() == type or parent is OwenCanvasFade:
+		return parent
+	for child in parent.get_children():
+		var result = _find_node_of_type(child, type)
+		if result:
+			return result
+	return null
