@@ -165,11 +165,8 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
-	# print(velocity.x, "  --  ", input_axis * speed * current_horizontal_jump_multiplier, " -- ", current_horizontal_jump_multiplier)
-
 	# update the horizontal jump multiplier if necessary
 	if current_horizontal_jump_multiplier != 1.0 and is_on_floor():
-		print("Resetting horizontal jump multiplier")
 		current_horizontal_jump_multiplier = 1.0
 
 	# Animation Logic. 
