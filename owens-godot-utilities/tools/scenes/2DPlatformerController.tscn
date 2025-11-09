@@ -12,6 +12,9 @@ region = Rect2(0, 1, 1, 1)
 [node name="OwenPlatformerController2D" type="CharacterBody2D"]
 scale = Vector2(1.5, 1.5)
 script = ExtResource("1_n8y6f")
+speed = 400.0
+gravity_rate = 2000.0
+jump_velocity = -800.0
 metadata/_custom_type_script = "uid://cek32sn2jkhxq"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

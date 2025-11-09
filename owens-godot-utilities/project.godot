@@ -47,3 +47,7 @@ reload_current_level={
 [layer_names]
 
 2d_physics/layer_1="General World Collision"
+
+[physics]
+
+common/physics_ticks_per_second=120

@@ -88,7 +88,17 @@ enum CHARACTER_STATE {
 ## The current state of the character.
 var cur_state: CHARACTER_STATE = CHARACTER_STATE.ACTIVE
 
-func _physics_process(delta: float) -> void:
+# Debug Variables
+const ON_COLOR := Color(1,1,1,1) # normal color
+const OFF_COLOR := Color(0.2,0.2,0.2,1) # dim color for "off"
+var jump_test_color : bool = false
+# @onready var char_sprite : Sprite2D = $CollisionShape2D/Sprite2D
+
+func _process(delta: float) -> void:
+	# Best to be used for processing things which should happen immediately every frame,
+	# such as input detection or jumping
+
+	# Input Processing
 	# If the character is respawning, freeze and skip all movement logic
 	if cur_state == CHARACTER_STATE.RESPAWNING:
 		velocity = Vector2.ZERO
@@ -99,6 +109,33 @@ func _physics_process(delta: float) -> void:
 	wall_coyote_timer = max(0, wall_coyote_timer - delta)
 	jump_buffer_timer = max(0, jump_buffer_timer - delta)
 	wall_jump_timer = max(0, wall_jump_timer - delta)
+
+	if Input.is_action_just_pressed("2d_platformer_jump"):
+		jump_buffer_timer = jump_buffer_time
+		print("Jump input registered at time %f", Time.get_ticks_msec())
+
+	if is_on_floor():
+		coyote_timer = coyote_time
+
+	# Jumping Logic
+	# If we have pressed the jump button recently, and are allowed to jump, do so.
+	if jump_buffer_timer > 0:
+		if coyote_timer > 0:
+			_jump()
+
+		elif wall_coyote_timer > 0 and not is_on_floor():
+			velocity.x = 0
+			velocity.x = (get_wall_normal().x * wall_jump_velocity)
+			wall_jump_timer = wall_jump_time
+			_jump()
+		
+	pass
+
+func _physics_process(delta: float) -> void:
+	# If the character is respawning, freeze and skip all movement logic
+	if cur_state == CHARACTER_STATE.RESPAWNING:
+		velocity = Vector2.ZERO
+		return
 
 	var acc = acceleration
 	var fric = friction
@@ -114,22 +151,7 @@ func _physics_process(delta: float) -> void:
 	if is_on_wall():
 		wall_coyote_timer = coyote_time
 
-	if Input.is_action_just_pressed("2d_platformer_jump"):
-		jump_buffer_timer = jump_buffer_time
-
 	var input_axis = Input.get_axis("2d_platformer_move_left", "2d_platformer_move_right")
-
-	# Jumping Logic
-	# If we have pressed the jump button recently, and are allowed to jump, do so.
-	if jump_buffer_timer > 0:
-		if coyote_timer > 0:
-			_jump()
-
-		elif wall_coyote_timer > 0 and not is_on_floor():
-			velocity.x = 0
-			velocity.x = (get_wall_normal().x * wall_jump_velocity)
-			wall_jump_timer = wall_jump_time
-			_jump()
 	
 	# If we are not in the wall jump phase, allow normal horizontal control
 	if wall_jump_timer <= 0:
@@ -137,7 +159,9 @@ func _physics_process(delta: float) -> void:
 			velocity.x = lerp(velocity.x, input_axis * speed, acc * delta)
 		else:
 			velocity.x = lerp(velocity.x, 0.0, fric * delta)
-			
+
+	# print("Move and slide at time %f", Time.get_ticks_msec())	
+	# print("Velocity: %s", velocity)
 	move_and_slide()
 
 	# Animation Logic. 
@@ -172,6 +196,13 @@ func _physics_process(delta: float) -> void:
 
 # Jump logic, called when a jump is to be performed
 func _jump():
+	jump_test_color = !jump_test_color
+	if jump_test_color:
+		sprite.modulate = ON_COLOR
+	else:
+		sprite.modulate = OFF_COLOR
+	
+	# print("Jumping at %f", Time.get_ticks_msec())
 	velocity.y = jump_velocity
 	jump_buffer_timer = 0
 	coyote_timer = 0
