@@ -3,8 +3,8 @@ extends CharacterBody2D
 
 # OwenPlatformerController2D
 # A simple platformer character controller for 2D games.
-# version 1.0.0
-# last updated: 2025-10-19
+# version 1.0.1
+# last updated: 2025-11-09
 
 @export_group("Movement")
 
@@ -51,6 +51,10 @@ var jump_buffer_timer: float = 0.0
 @export var wall_jump_time: float = 0.2
 # This timer tracks how long is left in the wall jump control disable window.
 var wall_jump_timer = 0
+
+## A multiplier to apply to horizontal movement during a jump.
+@export var horizontal_jump_multiplier: float = 1.0
+var current_horizontal_jump_multiplier: float = horizontal_jump_multiplier
 
 # Animation Variables
 @export_group("Animation")
@@ -112,7 +116,6 @@ func _process(delta: float) -> void:
 
 	if Input.is_action_just_pressed("2d_platformer_jump"):
 		jump_buffer_timer = jump_buffer_time
-		print("Jump input registered at time %f", Time.get_ticks_msec())
 
 	if is_on_floor():
 		coyote_timer = coyote_time
@@ -128,7 +131,7 @@ func _process(delta: float) -> void:
 			velocity.x = (get_wall_normal().x * wall_jump_velocity)
 			wall_jump_timer = wall_jump_time
 			_jump()
-		
+	
 	pass
 
 func _physics_process(delta: float) -> void:
@@ -156,13 +159,18 @@ func _physics_process(delta: float) -> void:
 	# If we are not in the wall jump phase, allow normal horizontal control
 	if wall_jump_timer <= 0:
 		if input_axis != 0:
-			velocity.x = lerp(velocity.x, input_axis * speed, acc * delta)
+			velocity.x = lerp(velocity.x, input_axis * speed * current_horizontal_jump_multiplier, acc * delta)
 		else:
 			velocity.x = lerp(velocity.x, 0.0, fric * delta)
 
-	# print("Move and slide at time %f", Time.get_ticks_msec())	
-	# print("Velocity: %s", velocity)
 	move_and_slide()
+
+	# print(velocity.x, "  --  ", input_axis * speed * current_horizontal_jump_multiplier, " -- ", current_horizontal_jump_multiplier)
+
+	# update the horizontal jump multiplier if necessary
+	if current_horizontal_jump_multiplier != 1.0 and is_on_floor():
+		print("Resetting horizontal jump multiplier")
+		current_horizontal_jump_multiplier = 1.0
 
 	# Animation Logic. 
 	# Will skip entirely if no anim_player is assigned.
@@ -202,8 +210,9 @@ func _jump():
 	else:
 		sprite.modulate = OFF_COLOR
 	
-	# print("Jumping at %f", Time.get_ticks_msec())
 	velocity.y = jump_velocity
+	current_horizontal_jump_multiplier = horizontal_jump_multiplier
+	velocity.x *= current_horizontal_jump_multiplier
 	jump_buffer_timer = 0
 	coyote_timer = 0
 	wall_coyote_timer = 0
