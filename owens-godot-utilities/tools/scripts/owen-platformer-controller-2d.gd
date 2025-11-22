@@ -42,7 +42,7 @@ var wall_coyote_timer: float = 0.0
 
 ## Allows jump inputs to be buffered and used before you actually hit the ground.
 ## When pressing jump in air, you have this many seconds where the jump is considered valid.
-@export var jump_buffer_time: float = 0.1
+@export var max_jump_buffer_time: float = 0.1
 # This timer tracks how long is left in the jump buffer window.
 var jump_buffer_timer: float = 0.0
 
@@ -51,13 +51,16 @@ var jump_buffer_timer: float = 0.0
 ## This is the horizontal velocity of a wall jump.
 @export var wall_jump_velocity: float = 400.0
 ## The time after a wall jump during which normal horizontal control is disabled.
-@export var wall_jump_time: float = 0.2
+@export var max_wall_jump_time: float = 0.2
 # This timer tracks how long is left in the wall jump control disable window.
 var wall_jump_timer = 0
 
 ## A multiplier to apply to horizontal movement during a jump.
 @export var horizontal_jump_multiplier: float = 1.0
 var current_horizontal_jump_multiplier: float = horizontal_jump_multiplier
+
+## The amount to reduce upwards velocity when the jump button is released early.
+@export var jump_cutoff_multiplier: float = 0.5
 
 # Animation Variables
 @export_group("Animation")
@@ -95,15 +98,34 @@ enum CHARACTER_STATE {
 ## The current state of the character.
 var cur_state: CHARACTER_STATE = CHARACTER_STATE.ACTIVE
 
-# Debug Variables
-const ON_COLOR := Color(1,1,1,1) # normal color
-const OFF_COLOR := Color(0.2,0.2,0.2,1) # dim color for "off"
-var jump_test_color : bool = false
-# @onready var char_sprite : Sprite2D = $CollisionShape2D/Sprite2D
+func _increment_timers(delta: float) -> void:
+	# Increments all timers by delta time.
+	coyote_timer = max(0, coyote_timer - delta)
+	wall_coyote_timer = max(0, wall_coyote_timer - delta)
+	jump_buffer_timer = max(0, jump_buffer_timer - delta)
+	wall_jump_timer = max(0, wall_jump_timer - delta)
 
+# Do all processing related to jumping here
+func _proccess_jump() -> void:
+	if Input.is_action_just_pressed("2d_platformer_jump"):
+		jump_buffer_timer = max_jump_buffer_time
+	elif Input.is_action_just_released("2d_platformer_jump"):
+		if velocity.y < 0 and not is_on_floor():
+			velocity.y *= jump_cutoff_multiplier
+
+	# If we have pressed the jump button recently, and are allowed to jump, do so.
+	if jump_buffer_timer > 0:
+		if coyote_timer > 0:
+			_jump()
+
+		elif wall_coyote_timer > 0 and not is_on_floor():
+			velocity.x = (get_wall_normal().x * wall_jump_velocity)
+			wall_jump_timer = max_wall_jump_time
+			_jump()
+
+# Best to be used for processing things which should happen immediately every frame,
+# such as input detection or jumping
 func _process(delta: float) -> void:
-	# Best to be used for processing things which should happen immediately every frame,
-	# such as input detection or jumping
 
 	# Input Processing
 	# If the character is respawning, freeze and skip all movement logic
@@ -112,30 +134,14 @@ func _process(delta: float) -> void:
 		return
 
 	# Update timers
-	coyote_timer = max(0, coyote_timer - delta)
-	wall_coyote_timer = max(0, wall_coyote_timer - delta)
-	jump_buffer_timer = max(0, jump_buffer_timer - delta)
-	wall_jump_timer = max(0, wall_jump_timer - delta)
+	_increment_timers(delta)
 
-	if Input.is_action_just_pressed("2d_platformer_jump"):
-		jump_buffer_timer = jump_buffer_time
-
-	if is_on_floor():
-		coyote_timer = coyote_time
-
-	# Jumping Logic
-	# If we have pressed the jump button recently, and are allowed to jump, do so.
-	if jump_buffer_timer > 0:
-		if coyote_timer > 0:
-			_jump()
-
-		elif wall_coyote_timer > 0 and not is_on_floor():
-			velocity.x = 0
-			velocity.x = (get_wall_normal().x * wall_jump_velocity)
-			wall_jump_timer = wall_jump_time
-			_jump()
-	
+	# Process jump logic
+	_proccess_jump()
 	pass
+
+func _get_wall_slide_rate() -> float:
+	return wall_slide_slow_rate if (is_on_wall() and velocity.y > 0) else 1.0
 
 func _physics_process(delta: float) -> void:
 	# If the character is respawning, freeze and skip all movement logic
@@ -143,6 +149,7 @@ func _physics_process(delta: float) -> void:
 		velocity = Vector2.ZERO
 		return
 
+	# local variables for acceleration and friction
 	var acc = acceleration
 	var fric = friction
 
@@ -150,7 +157,7 @@ func _physics_process(delta: float) -> void:
 	if is_on_floor():
 		coyote_timer = coyote_time
 	else:
-		velocity.y += gravity_rate * delta * (wall_slide_slow_rate if (is_on_wall() and velocity.y > 0) else 1.0)
+		velocity.y += gravity_rate * delta * _get_wall_slide_rate()
 		acc = acceleration_air
 		fric = friction_air
 	
@@ -174,44 +181,8 @@ func _physics_process(delta: float) -> void:
 	if current_horizontal_jump_multiplier != 1.0 and is_on_floor():
 		current_horizontal_jump_multiplier = 1.0
 
-	# Animation Logic. 
-	# Will skip entirely if no anim_player is assigned.
-	if anim_player:
-		var new_anim_state: ANIM_STATE
-		if is_on_floor():
-			if input_axis != 0:
-				new_anim_state = ANIM_STATE.WALK
-			else:
-				new_anim_state = ANIM_STATE.IDLE
-		else:
-			new_anim_state = ANIM_STATE.JUMP
-
-		if new_anim_state != anim_state:
-			anim_state = new_anim_state
-			anim_player.stop()
-
-			match new_anim_state:
-				ANIM_STATE.IDLE:
-					anim_player.play(IdleAnimString)
-				ANIM_STATE.WALK:
-					anim_player.play(WalkAnimString)
-				ANIM_STATE.JUMP:
-					anim_player.play(JumpAnimString)
-		
-		# TODO: Generalize
-		if input_axis < 0:
-			sprite.flip_h = false
-		elif input_axis > 0:
-			sprite.flip_h = true
-
 # Jump logic, called when a jump is to be performed
 func _jump():
-	jump_test_color = !jump_test_color
-	if jump_test_color:
-		sprite.modulate = ON_COLOR
-	else:
-		sprite.modulate = OFF_COLOR
-	
 	velocity.y = jump_velocity
 	current_horizontal_jump_multiplier = horizontal_jump_multiplier
 	velocity.x *= current_horizontal_jump_multiplier
