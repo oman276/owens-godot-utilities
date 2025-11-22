@@ -3,8 +3,8 @@ extends CharacterBody2D
 
 # OwenPlatformerController2D
 # A simple platformer character controller for 2D games.
-# version 1.0.1
-# last updated: 2025-11-09
+# version 1.1.0
+# last updated: 2025-11-21
 
 @export_group("Movement")
 
@@ -13,6 +13,9 @@ extends CharacterBody2D
 
 ## The gravity rate affects how quickly the character falls in cm/s. In real life, this is 980 cm/s
 @export var gravity_rate: float = 980
+
+## The amount sprint will increase your horizontal movement speed.
+@export var sprint_multiplier: float = 1.5
 
 @export_subgroup("Acceleration")
 ## How quickly a character reaches their max speed on the ground.
@@ -159,7 +162,9 @@ func _physics_process(delta: float) -> void:
 	# If we are not in the wall jump phase, allow normal horizontal control
 	if wall_jump_timer <= 0:
 		if input_axis != 0:
-			velocity.x = lerp(velocity.x, input_axis * speed * current_horizontal_jump_multiplier, acc * delta)
+			velocity.x = lerp(velocity.x, 
+			input_axis * speed * current_horizontal_jump_multiplier * _get_sprint_multiplier(), 
+			acc * delta)
 		else:
 			velocity.x = lerp(velocity.x, 0.0, fric * delta)
 
@@ -213,6 +218,11 @@ func _jump():
 	jump_buffer_timer = 0
 	coyote_timer = 0
 	wall_coyote_timer = 0
+
+func _get_sprint_multiplier() -> float:
+	if is_on_floor() and Input.is_action_pressed("2d_platformer_sprint"):
+		return sprint_multiplier
+	return 1.0
 
 func hit():
 	if cur_state == CHARACTER_STATE.ACTIVE:
