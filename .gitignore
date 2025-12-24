@@ -13,3 +13,11 @@
 *.importsettings.backup.6
 *.importsettings.backup.7
 *.importsettings.backup.8
+
+
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+*.import
+.editorconfig
