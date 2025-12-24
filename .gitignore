@@ -14,6 +14,7 @@
 *.importsettings.backup.7
 *.importsettings.backup.8
 
+icon.svg
 
 # Godot 4+ specific ignores
 .godot/
