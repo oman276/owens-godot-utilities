@@ -1,0 +1,11 @@
+[gd_scene load_steps=4 format=3 uid="uid://o4iyp1u4haag"]
+
+[ext_resource type="Script" uid="uid://cuidamb18i61r" path="res://addons/owens-godot-framework/tools/scripts/systems/owen_game_manager.gd" id="1_5gri3"]
+[ext_resource type="PackedScene" uid="uid://ysnme2weplc3" path="res://addons/owens-godot-framework/tools/scenes/systems/OwenLoadingCanvas.tscn" id="2_m5715"]
+[ext_resource type="PackedScene" uid="uid://bey3qxjuh0qpj" path="res://addons/owens-godot-framework/tools/scenes/systems/OwenMouseCursor.tscn" id="3_cjxhq"]
+
+[node name="OwenGameManager" type="Node2D"]
+script = ExtResource("1_5gri3")
+loading_canvas_scene = ExtResource("2_m5715")
+mouse_cursor_scene = ExtResource("3_cjxhq")
+metadata/_custom_type_script = "uid://cuidamb18i61r"

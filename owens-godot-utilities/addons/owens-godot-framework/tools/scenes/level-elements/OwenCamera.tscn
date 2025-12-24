@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://blq7187l5a4s7"]
+
+[ext_resource type="Script" uid="uid://pe5bk0vs34g1" path="res://addons/owens-godot-framework/tools/scripts/level-elements/owen_camera.gd" id="1_vsqke"]
+
+[node name="OwenCamera" type="Camera2D"]
+script = ExtResource("1_vsqke")

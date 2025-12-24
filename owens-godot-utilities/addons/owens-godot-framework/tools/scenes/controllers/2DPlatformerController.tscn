@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://bokjajcbkuhb6"]
 
-[ext_resource type="Script" uid="uid://cek32sn2jkhxq" path="res://tools/scripts/owen-platformer-controller-2d.gd" id="1_n8y6f"]
-[ext_resource type="Texture2D" uid="uid://dkn7y71bnryy8" path="res://tools/assets/basic_colors.png" id="2_3yjkw"]
+[ext_resource type="Script" uid="uid://cek32sn2jkhxq" path="res://addons/owens-godot-framework/tools/scripts/controllers/owen-platformer-controller-2d.gd" id="1_n8y6f"]
+[ext_resource type="Texture2D" uid="uid://dkn7y71bnryy8" path="res://addons/owens-godot-framework/tools/assets/basic_colors.png" id="2_3yjkw"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xalop"]
 

@@ -27,9 +27,10 @@ enum Levels {
 }
 
 ## This dictionary maps Levels enum values to their corresponding scene paths.
+## This is subject to change as I make a more robust level management system.
 var level_path_dict: Dictionary = {
 	Levels.NONE: "",
-	Levels.OWEN_TEST_LEVEL: "res://test_game/scenes/test_scene.tscn",
+	Levels.OWEN_TEST_LEVEL: "res://addons/owens-godot-framework/test_game_data/scenes/test_scene.tscn",
 }
 
 ## Loading
@@ -40,8 +41,9 @@ var level_path_dict: Dictionary = {
 var uses_loading_screen: bool = true
 ## This is the canvas layer that will be used for the loading screen.
 var loading_canvas: CanvasLayer = null
-## This is the string path to the loading canvas scene. Make sure to replace it yourself.
-var loading_canvas_path: String = "res://tools/scenes/OwenLoadingCanvas.tscn"
+
+# The loading canvas scene to instantiate. Set this in the editor by dragging the scene file here.
+@export var loading_canvas_scene: PackedScene
 # Time to wait before actually loading the level, to allow for fade in effects.
 var loading_time: float = 0.5
 # The loading canvas fade node, if it exists.
@@ -59,7 +61,8 @@ var current_level_node: Node2D = null
 
 # Mouse Cursor
 # We can define a custom mouse cursor to replace the system cursor.
-var mouse_cursor_path: String = "res://tools/scenes/OwenMouseCursor.tscn"
+# The mouse cursor scene to instantiate. Set this in the editor by dragging the scene file here.
+@export var mouse_cursor_scene: PackedScene
 # Set to true if you want to use a custom mouse cursor and have the mouse cursor setup.
 var load_custom_mouse: bool = true
 # The mouse cursor node to be saved here.
@@ -72,18 +75,20 @@ var debug_reload_level: bool = true
 
 func _ready():
 	if uses_loading_screen:
-		if loading_canvas_path == "":
-			push_error("OwenGameManager: uses_loading_screen is true but loading_canvas_path is empty.")
+		if not loading_canvas_scene:
+			push_error("OwenGameManager: uses_loading_screen is true but loading_canvas_scene is not set. Please assign it in the editor.")
 		else:
-			loading_canvas = load(loading_canvas_path).instantiate()
+			loading_canvas = loading_canvas_scene.instantiate()
 			add_child(loading_canvas)
 			# Get reference to OwenCanvasFade if it exists
 			loading_canvas_fade = _find_node_of_type(loading_canvas, "OwenCanvasFade") as OwenCanvasFade
 	
 	if load_custom_mouse:
-		var mouse_cursor_tscn = load(mouse_cursor_path)
-		mouse_cursor = mouse_cursor_tscn.instantiate() as OwenMouseCursor
-		add_child(mouse_cursor)
+		if not mouse_cursor_scene:
+			push_error("OwenGameManager: load_custom_mouse is true but mouse_cursor_scene is not set. Please assign it in the editor.")
+		else:
+			mouse_cursor = mouse_cursor_scene.instantiate() as OwenMouseCursor
+			add_child(mouse_cursor)
 
 	load_level(initial_level)
 

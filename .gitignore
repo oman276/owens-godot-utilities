@@ -1,1 +1,15 @@
 *.uid
+*.godot
+*.editorconfig
+*.gitignore
+*.icon.svg
+*.import
+*.importsettings
+*.importsettings.backup
+*.importsettings.backup.2
+*.importsettings.backup.3
+*.importsettings.backup.4
+*.importsettings.backup.5
+*.importsettings.backup.6
+*.importsettings.backup.7
+*.importsettings.backup.8

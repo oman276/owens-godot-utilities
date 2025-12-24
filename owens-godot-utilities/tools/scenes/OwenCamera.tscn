@@ -1,7 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://blq7187l5a4s7"]
-
-[ext_resource type="Script" uid="uid://daprbf7dwnuhf" path="res://tools/scripts/owen_camera.gd" id="1_vsqke"]
-
-[node name="OwenCamera" type="Camera2D"]
-script = ExtResource("1_vsqke")
-metadata/_custom_type_script = "uid://b5onv7b3poij2"
