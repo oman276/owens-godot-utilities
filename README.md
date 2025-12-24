@@ -8,6 +8,8 @@ Please check out [owengames.com](https://owengames.com/) or visit may page on [i
 
 Thanks for checking this out!
 
+Current Plugin Version: 1.0.0
+
 # Current Utilities
 
 ## Owen Camera
@@ -21,3 +23,7 @@ This is a simple 2D Platformer Controller with the following features implemente
 - Wall Jumps
 - Coyote Time
 - Jump Buffers
+
+## Owen Game Manager
+
+This is a simple system for holding saved game information and managing the smooth loading and unloading of levels.
