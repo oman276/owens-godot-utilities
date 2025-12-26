@@ -12,8 +12,13 @@ region = Rect2(0, 1, 1, 1)
 [node name="OwenPlatformerController2D" type="CharacterBody2D"]
 scale = Vector2(1.5, 1.5)
 script = ExtResource("1_spuii")
-speed = 400.0
-friction = 20.0
+speed = 800.0
+acceleration = 5000.0
+friction = 2400.0
+dodge_friction = 5000.0
+dodge_friction_sprinting = 6666.0
+dodge_speed_multiplier = 3.0
+dodge_speed_sprint_multiplier = 4.0
 metadata/_custom_type_script = "uid://cek32sn2jkhxq"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
