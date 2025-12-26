@@ -18,19 +18,11 @@ enum GameState {
 	LOADING
 }
 
-## Levels is a queriable enum for the different levels in your game. 
-## You can use this to check which level is active or load levels by enum instead of string.
-## Add more levels as needed.
-enum Levels {
-	NONE,
-	OWEN_TEST_LEVEL,
-}
-
-## This dictionary maps Levels enum values to their corresponding scene paths.
-## This is subject to change as I make a more robust level management system.
-var level_path_dict: Dictionary = {
-	Levels.NONE: "",
-	Levels.OWEN_TEST_LEVEL: "res://addons/owens-godot-framework/test_game_data/scenes/test_scene.tscn",
+## This dictionary maps level names (strings) to their corresponding PackedScene objects.
+## You can add new levels by editing this dictionary in the inspector.
+## The key is the level name (string), and the value is the PackedScene to load.
+@export var level_path_dict: Dictionary[String, PackedScene] = {
+	"Platformer Test Level": preload("res://addons/owens-godot-framework/test_game_data/scenes/test_scene.tscn"),
 }
 
 ## Loading
@@ -49,13 +41,13 @@ var loading_time: float = 0.5
 # The loading canvas fade node, if it exists.
 var loading_canvas_fade: OwenCanvasFade = null
 
-# The initial level to load when the game starts.
-var initial_level: Levels = Levels.OWEN_TEST_LEVEL
+# The initial level to load when the game starts. This should match a key in level_path_dict.
+@export var initial_level: String = "Platformer Test Level"
 # The current global game state. The initial state is DEFAULT.
 var current_global_state: GameState = GameState.DEFAULT
-# The current level enum. Set to NONE by default. 
+# The current level name. Set to empty string by default. 
 # Note that at the start of the game, the manager will load the initial_level instead.
-var current_level: Levels = Levels.NONE
+var current_level: String = ""
 # The current level node instance, which we reference so we can unload it later.
 var current_level_node: Node2D = null
 
@@ -92,8 +84,9 @@ func _ready():
 
 	load_level(initial_level)
 
-## Externally callable function to load a level by enum.
-func load_level(level: Levels) -> void:
+## Externally callable function to load a level by name.
+## The level name should match a key in the level_path_dict dictionary.
+func load_level(level: String) -> void:
 	if level == current_level:
 		return
 	_force_load_level(level)
@@ -104,7 +97,7 @@ func reload_level() -> void:
 	_force_load_level(current_level)
 
 ## Unload the current level and load a new one.
-func _force_load_level(new_level: Levels):
+func _force_load_level(new_level: String):
 	if uses_loading_screen and loading_canvas:
 		if loading_canvas_fade:
 			loading_canvas_fade.fade_in()
@@ -118,11 +111,15 @@ func _force_load_level(new_level: Levels):
 
 	current_level = new_level
 
-	var scene_str = level_path_dict[new_level]
-	if scene_str != "":
-		var scene = load(scene_str)
-		current_level_node = scene.instantiate()
-		add_child(current_level_node)
+	if new_level in level_path_dict:
+		var scene: PackedScene = level_path_dict[new_level]
+		if scene:
+			current_level_node = scene.instantiate()
+			add_child(current_level_node)
+		else:
+			push_error("OwenGameManager: Level '%s' has a null PackedScene in level_path_dict." % new_level)
+	else:
+		push_error("OwenGameManager: Level '%s' not found in level_path_dict." % new_level)
 
 	_on_load_level(current_level)
 	if uses_loading_screen and loading_canvas_fade:
@@ -134,13 +131,13 @@ func custom_mouse_visible(mouse_visibility: bool) -> void:
 		return
 	mouse_cursor.visible = mouse_visibility
 
-func _on_load_level(level: Levels) -> void:
+func _on_load_level(level: String) -> void:
 	# Implement any logic you want to happen when a level is loaded here.
 	# There may be general setup you want to do in all cases, or you can do 
 	# something specific on certain levels.
 	return
 
-func _on_unload_level(level: Levels) -> void:
+func _on_unload_level(level: String) -> void:
 	# Implement any logic you want to happen when a level is unloaded here.
 	# There may be general cleanup you want to do in all cases, or you can do 
 	# something specific on certain levels.
