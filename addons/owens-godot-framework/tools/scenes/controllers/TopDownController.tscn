@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3 uid="uid://dv2omdrmg3613"]
+
+[ext_resource type="Script" uid="uid://c716ha5aqmeu7" path="res://addons/owens-godot-framework/tools/scripts/controllers/owen-top-down-controller.gd" id="1_spuii"]
+[ext_resource type="Texture2D" uid="uid://dkn7y71bnryy8" path="res://addons/owens-godot-framework/tools/assets/basic_colors.png" id="2_ibdpn"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xalop"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kxeuq"]
+atlas = ExtResource("2_ibdpn")
+region = Rect2(0, 1, 1, 1)
+
+[node name="OwenPlatformerController2D" type="CharacterBody2D"]
+scale = Vector2(1.5, 1.5)
+script = ExtResource("1_spuii")
+speed = 400.0
+friction = 20.0
+metadata/_custom_type_script = "uid://cek32sn2jkhxq"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_xalop")
+
+[node name="Sprite2D" type="Sprite2D" parent="CollisionShape2D"]
+texture_filter = 1
+position = Vector2(0, -5.9604645e-08)
+scale = Vector2(20, 20)
+texture = SubResource("AtlasTexture_kxeuq")
+metadata/_edit_group_ = true
+
+[node name="DodgeTimer" type="Timer" parent="."]
