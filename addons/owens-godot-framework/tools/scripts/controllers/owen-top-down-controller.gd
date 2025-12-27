@@ -27,6 +27,12 @@ var _move_state : PlayerMoveState = PlayerMoveState.FREE
 ## The friction of the player's basic movement.
 @export var friction : float = 10
 
+var _speed_values: Dictionary = {
+	"speed" : 0,
+	"acceleration" : 0,
+	"friction" : 0
+}
+
 @export_group("Sprinting")
 ## The speed multiplier of the player's sprinting movement.
 @export var sprint_speed_multiplier : float = 1.5
@@ -70,13 +76,13 @@ func _physics_process(delta: float):
 	match _move_state:
 		# Basic Movement, player is not in a special state like dodging.
 		PlayerMoveState.FREE:
-			var speed_values = _get_speed_values()
+			_update_speed_values()
 			var input_direction = _get_input_direction()
 			# Modify our velocity once we have all the info we need from input and speed calculations
 			if input_direction != Vector2.ZERO:
-				velocity = velocity.move_toward(input_direction * speed_values["speed"], speed_values["acceleration"] * delta)
+				velocity = velocity.move_toward(input_direction * _speed_values["speed"], _speed_values["acceleration"] * delta)
 			else:
-				velocity = velocity.move_toward(Vector2.ZERO, speed_values["friction"] * delta)
+				velocity = velocity.move_toward(Vector2.ZERO, _speed_values["friction"] * delta)
 
 		# Dodging, player is in a dodge state.
 		PlayerMoveState.DODGING:
@@ -85,16 +91,10 @@ func _physics_process(delta: float):
 	move_and_slide()
 
 # We calculate the current speed values based on several factors. 
-# The speed is returned as one object we query for the values we want
-func _get_speed_values() -> Dictionary:
-	var _i_speed = speed * (sprint_speed_multiplier if is_sprinting() else 1.0)
-	var _i_acceleration = acceleration * (sprint_acceleration_multiplier if is_sprinting() else 1.0)
-	var _i_friction = friction * (sprint_friction_multiplier if is_sprinting() else 1.0)
-	return {
-		"speed" : _i_speed, 
-		"acceleration" : _i_acceleration, 
-		"friction" : _i_friction
-	}
+func _update_speed_values() -> void:
+	_speed_values["speed"] = speed * (sprint_speed_multiplier if is_sprinting() else 1.0)
+	_speed_values["acceleration"] = acceleration * (sprint_acceleration_multiplier if is_sprinting() else 1.0)
+	_speed_values["friction"] = friction * (sprint_friction_multiplier if is_sprinting() else 1.0)
 
 func _get_input_direction() -> Vector2:
 	return OwenInputManager.TopDown.get_movement_dir()

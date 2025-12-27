@@ -4,32 +4,65 @@ class_name OwenInputManager
 # OwenInputManager
 # A centralized manager for all input action strings in Owen's Godot Framework.
 # This provides type-safe access to input actions and validates they exist in the InputMap.
-# version 1.0.0
+# version 1.2.0
 # last updated: 2025-12-27
 
 ## If enabled, missing input actions will throw errors instead of warnings.
 ## Recommended to enable during development, disable for production builds.
-@export var strict_mode: bool = false
+const strict_mode: bool = false
 
 # ============================================================================
-# INPUT ACTION DICTIONARIES
+# VALIDATION CONFIGURATION
+# ============================================================================
+# Set these to false to skip validation for categories you're not using.
+# This prevents warnings about missing input actions for unused control schemes.
+
+## Whether to validate TopDown input actions on startup.
+const validate_topdown: bool = true
+## Whether to validate Platformer2D input actions on startup.
+const validate_platformer: bool = true
+## Whether to validate Debug input actions on startup.
+const validate_debug: bool = true
+
+# ============================================================================
+# INPUT ACTION CONSTANTS
 # ============================================================================
 # Access these directly for simple Input calls:
-# Example: Input.is_action_pressed(InputManager.TopDown.SPRINT)
-
+# Example: Input.is_action_pressed(OwenInputManager.TopDown.SPRINT)
 
 # INPUT ACTIONS
-# Each class holds static variables for the strings which should pass into Input calls.
+# Each class holds constants for the strings which should pass into Input calls.
 # They can also hold helper functions for common input calls.
 
 # TopDown input actions
 class TopDown:
-	static var DODGE = "topdown_dodge"
-	static var SPRINT = "topdown_sprint"
-	static var MOVE_LEFT = "topdown_move_left"
-	static var MOVE_RIGHT = "topdown_move_right"
-	static var MOVE_UP = "topdown_move_up"
-	static var MOVE_DOWN = "topdown_move_down"
+	## Single source of truth for all TopDown input action strings.
+	const ACTIONS := {
+		"DODGE": "topdown_dodge",
+		"SPRINT": "topdown_sprint",
+		"MOVE_LEFT": "topdown_move_left",
+		"MOVE_RIGHT": "topdown_move_right",
+		"MOVE_UP": "topdown_move_up",
+		"MOVE_DOWN": "topdown_move_down",
+	}
+	
+	# Read-only accessors for clean external API
+	static var DODGE: String:
+		get: return ACTIONS["DODGE"]
+	static var SPRINT: String:
+		get: return ACTIONS["SPRINT"]
+	static var MOVE_LEFT: String:
+		get: return ACTIONS["MOVE_LEFT"]
+	static var MOVE_RIGHT: String:
+		get: return ACTIONS["MOVE_RIGHT"]
+	static var MOVE_UP: String:
+		get: return ACTIONS["MOVE_UP"]
+	static var MOVE_DOWN: String:
+		get: return ACTIONS["MOVE_DOWN"]
+	
+	## Returns all action strings for validation.
+	static func get_all_actions() -> Array:
+		return ACTIONS.values()
 
 	## Returns the movement vector for top-down movement.
 	## Shorthand for Input.get_vector(move_left, move_right, move_up, move_down)
@@ -39,14 +72,31 @@ class TopDown:
 			MOVE_RIGHT, 
 			MOVE_UP,
 			MOVE_DOWN
-		).normalized()
+		)
 
 # Platformer input actions
 class Platformer2D:
-	static var JUMP = "2d_platformer_jump"
-	static var SPRINT = "2d_platformer_sprint"
-	static var MOVE_LEFT = "2d_platformer_move_left"
-	static var MOVE_RIGHT = "2d_platformer_move_right"
+	## Single source of truth for all Platformer2D input action strings.
+	const ACTIONS := {
+		"JUMP": "2d_platformer_jump",
+		"SPRINT": "2d_platformer_sprint",
+		"MOVE_LEFT": "2d_platformer_move_left",
+		"MOVE_RIGHT": "2d_platformer_move_right",
+	}
+	
+	# Read-only accessors for clean external API
+	static var JUMP: String:
+		get: return ACTIONS["JUMP"]
+	static var SPRINT: String:
+		get: return ACTIONS["SPRINT"]
+	static var MOVE_LEFT: String:
+		get: return ACTIONS["MOVE_LEFT"]
+	static var MOVE_RIGHT: String:
+		get: return ACTIONS["MOVE_RIGHT"]
+	
+	## Returns all action strings for validation.
+	static func get_all_actions() -> Array:
+		return ACTIONS.values()
 
 	## Returns the horizontal axis for platformer movement (-1 to 1).
 	## Shorthand for Input.get_axis(move_left, move_right)
@@ -57,13 +107,20 @@ class Platformer2D:
 		)
 
 class Debug:
-	static var RELOAD_CURRENT_LEVEL = "reload_current_level"
+	## Single source of truth for all Debug input action strings.
+	const ACTIONS := {
+		"RELOAD_CURRENT_LEVEL": "reload_current_level",
+	}
+	
+	# Read-only accessors for clean external API
+	static var RELOAD_CURRENT_LEVEL: String:
+		get: return ACTIONS["RELOAD_CURRENT_LEVEL"]
+	
+	## Returns all action strings for validation.
+	static func get_all_actions() -> Array:
+		return ACTIONS.values()
 
 # VALIDATION SYSTEM
-# These are the arrays of input actions that we cycle through for validation.
-var _topdown_actions: Array[String] = [TopDown.MOVE_LEFT, TopDown.MOVE_RIGHT, TopDown.MOVE_UP, TopDown.MOVE_DOWN, TopDown.SPRINT, TopDown.DODGE]
-var _platformer_actions: Array[String] = [Platformer2D.MOVE_LEFT, Platformer2D.MOVE_RIGHT, Platformer2D.JUMP, Platformer2D.SPRINT]
-var _debug_actions: Array[String] = [Debug.RELOAD_CURRENT_LEVEL]
 
 func _ready() -> void:
 	_validate_all_input_actions()
@@ -76,14 +133,25 @@ func _validate_all_input_actions() -> void:
 	
 	var all_valid := true
 	
-	all_valid = _validate_category("TopDown", _topdown_actions) and all_valid
-	all_valid = _validate_category("Platformer", _platformer_actions) and all_valid
-	all_valid = _validate_category("Debug", _debug_actions) and all_valid
+	if validate_topdown:
+		all_valid = _validate_category("TopDown", TopDown.get_all_actions()) and all_valid
+	else:
+		print("- TopDown: skipped (validation disabled)")
+		
+	if validate_platformer:
+		all_valid = _validate_category("Platformer", Platformer2D.get_all_actions()) and all_valid
+	else:
+		print("- Platformer: skipped (validation disabled)")
+		
+	if validate_debug:
+		all_valid = _validate_category("Debug", Debug.get_all_actions()) and all_valid
+	else:
+		print("- Debug: skipped (validation disabled)")
 
 	print("========================================")
 	
 	if all_valid:
-		print("✓ All input actions validated successfully!")
+		print("All input actions validated successfully!")
 	else:
 		if strict_mode:
 			push_error("InputManager: Validation failed! Missing actions detected. Fix InputMap or disable strict_mode.")
@@ -94,7 +162,7 @@ func _validate_all_input_actions() -> void:
 	print("========================================")
 
 ## Validates a single category of input actions
-func _validate_category(category_name: String, actions: Array[String]) -> bool:
+func _validate_category(category_name: String, actions: Array) -> bool:
 	var missing_actions: Array[String] = []
 	
 	for action_name in actions:
@@ -122,11 +190,12 @@ func print_all_actions() -> void:
 	print("========================================")
 	print("InputManager - All Registered Actions")
 	print("========================================")
-	_print_category_actions("TopDown", _topdown_actions)
-	_print_category_actions("Platformer", _platformer_actions)
+	_print_category_actions("TopDown", TopDown.get_all_actions())
+	_print_category_actions("Platformer", Platformer2D.get_all_actions())
+	_print_category_actions("Debug", Debug.get_all_actions())
 	print("========================================")
 
-func _print_category_actions(category_name: String, actions: Array[String]) -> void:
+func _print_category_actions(category_name: String, actions: Array) -> void:
 	print("\n%s:" % category_name)
 	for action in actions:
 		print("  %s" % action)
