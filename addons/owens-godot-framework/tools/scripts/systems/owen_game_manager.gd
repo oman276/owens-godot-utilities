@@ -145,7 +145,7 @@ func _on_unload_level(level: String) -> void:
 
 # We use this to process debug inputs.
 func _process(_delta):
-	if debug_reload_level and Input.is_action_just_pressed("reload_current_level"):
+	if debug_reload_level and Input.is_action_just_pressed(OwenInputManager.Debug.RELOAD_CURRENT_LEVEL):
 		print("OwenGameManager: Reloading current level via debug keypress.")
 		reload_level()
 

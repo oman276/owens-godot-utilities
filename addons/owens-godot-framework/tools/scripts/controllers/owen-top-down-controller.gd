@@ -3,8 +3,8 @@ class_name OwenTopDownController
 
 # OwenTopDownController
 # A simple top-down character controller for 2D games.
-# version 1.0.1
-# last updated: 2025-12-26
+# version 1.0.2
+# last updated: 2025-12-27
 
 # PlayerMoveState is a globally queriable enum for the current state of the player's movement.
 # You can use this to check if the player is free, dodging, etc to restrict or enable certain features.
@@ -16,8 +16,6 @@ enum PlayerMoveState {
 
 # The current state of the player's movement.
 var _move_state : PlayerMoveState = PlayerMoveState.FREE
-# The vector direction of the player's dodge.
-var _dodge_vector : Vector2 = Vector2(1, 0)
 
 @export_category("Movement Properties")
 
@@ -54,13 +52,16 @@ var _dodge_vector : Vector2 = Vector2(1, 0)
 @onready var dodge_timer : Timer = $DodgeTimer
 
 func _ready():
+	if not dodge_timer:
+		push_error("OwenTopDownController: Dodge timer not found.")
+		return
 	# Connect the dodge timer timeout signal to the _on_dodge_timer_timeout function.
 	dodge_timer.timeout.connect(_on_dodge_timer_timeout)
 
 # All input processing which should happen immediately and not wait for the next physics frame.
-func _process(delta: float):
+func _process(_delta: float):	
 	# If the player is free and the dodge button is pressed, perform the dodge.
-	if _move_state == PlayerMoveState.FREE and Input.is_action_just_pressed("topdown_dodge"):
+	if _move_state == PlayerMoveState.FREE and Input.is_action_just_pressed(OwenInputManager.TopDown.DODGE):
 		_dodge()
 
 # All physics processing which should happen every physics frame.
@@ -70,20 +71,20 @@ func _physics_process(delta: float):
 		# Basic Movement, player is not in a special state like dodging.
 		PlayerMoveState.FREE:
 			var speed_values = _get_speed_values()
-			var input_direction: Vector2 = Input.get_vector("topdown_move_left", "topdown_move_right", "topdown_move_up", "topdown_move_down")
+			var input_direction = _get_input_direction()
 			# Modify our velocity once we have all the info we need from input and speed calculations
 			if input_direction != Vector2.ZERO:
 				velocity = velocity.move_toward(input_direction * speed_values["speed"], speed_values["acceleration"] * delta)
 			else:
-				velocity = velocity.move_toward(Vector2(0, 0), speed_values["friction"] * delta)
+				velocity = velocity.move_toward(Vector2.ZERO, speed_values["friction"] * delta)
 
 		# Dodging, player is in a dodge state.
 		PlayerMoveState.DODGING:
-			velocity = velocity.move_toward(Vector2.ZERO, dodge_friction * delta)
+			velocity = velocity.move_toward(Vector2.ZERO, (dodge_friction_sprinting if is_sprinting() else dodge_friction) * delta)
 
 	move_and_slide()
 
-# We caclulate the current speed values based on several factors. 
+# We calculate the current speed values based on several factors. 
 # The speed is returned as one object we query for the values we want
 func _get_speed_values() -> Dictionary:
 	var _i_speed = speed * (sprint_speed_multiplier if is_sprinting() else 1.0)
@@ -95,6 +96,9 @@ func _get_speed_values() -> Dictionary:
 		"friction" : _i_friction
 	}
 
+func _get_input_direction() -> Vector2:
+	return OwenInputManager.TopDown.get_movement_dir()
+
 # When the dodge timer ends, reset the player state to FREE
 func _on_dodge_timer_timeout():
 	_move_state = PlayerMoveState.FREE
@@ -102,19 +106,19 @@ func _on_dodge_timer_timeout():
 # Checks if the player is sprinting.
 # This could be a simple boolean but it's a function for future flexibility.
 func is_sprinting() -> bool:
-	return Input.is_action_pressed("topdown_sprint")
+	return Input.is_action_pressed(OwenInputManager.TopDown.SPRINT)
 
 # Performs the player's dodge.
 func _dodge():
+	# Get the current movement vector from player input
+	var dodge_vector = _get_input_direction()
+	# We don't want to dodge if we are already dodging or if the dodge vector is zero
+	if _move_state == PlayerMoveState.DODGING or dodge_vector == Vector2.ZERO:
+		return
 	# Set movement state to DODGING
 	_move_state = PlayerMoveState.DODGING
-
-	# Get the current movement vector from palyer input
-	_dodge_vector = Input.get_vector("topdown_move_left", "topdown_move_right", "topdown_move_up", "topdown_move_down").normalized()
-	
 	# calculate velocity
-	velocity = _dodge_vector * speed * (dodge_speed_sprint_multiplier if is_sprinting() else dodge_speed_multiplier)
-	
+	velocity = dodge_vector * speed * (dodge_speed_sprint_multiplier if is_sprinting() else dodge_speed_multiplier)
 	# Reset and set timer
 	dodge_timer.stop()
 	dodge_timer.start(dodge_duration_sprinting if is_sprinting() else dodge_duration)
