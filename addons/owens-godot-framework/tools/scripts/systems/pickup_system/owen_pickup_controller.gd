@@ -13,7 +13,10 @@ var held_object : OwenPickup = null
 # The object that is next to be picked up by the player.
 var next_held_object : OwenPickup = null
 # A list of objects that are currently in the player's pickup zone.
-var nearby_object_list : Array = []
+var nearby_object_list : Array[OwenPickup] = []
+
+# Whether the pickup controller should process input. Set to false to disable pickup controls.
+@export var input_enabled : bool = true
 
 func _ready() -> void:
 	GameManager.custom_mouse_visible(false)
@@ -24,14 +27,17 @@ func _process(_delta):
 	if held_object != null:
 		look_at(get_global_mouse_position())
 
-	#Input processing
+	# Skip input processing if disabled.
+	if not input_enabled:
+		return
+
+	# Input processing
 	if Input.is_action_just_pressed(OwenInputManager.Pickup.PICK_UP):
 		_pick_up()
 	elif Input.is_action_just_pressed(OwenInputManager.Pickup.DROP):
 		_drop()
 	if Input.is_action_just_pressed(OwenInputManager.Pickup.CLICK_ACTION):
-		if held_object != null:
-			held_object.click_action()
+		_on_click_action()
 
 # Pick up the first object in the list of nearby objects.
 func _pick_up():
@@ -42,6 +48,9 @@ func _pick_up():
 		if held_object != null:
 			_drop()
 			await get_tree().process_frame
+			if item == null:
+				push_warning("OwenPickupController: Item is null after dropping, cannot pick up.")
+				return
 		# Set the held object to the new object.
 		held_object = item
 		held_object.pick_up(self)	
@@ -119,7 +128,7 @@ func _update_next_pickup():
 		next_held_object.next_to_pick_up(false)
 		next_held_object = null
 
-# When an object enters the player's pickup zone, add it to the list of held objects.
+# When an object enters the player's pickup zone, add it to the list of nearby objects.
 # Update the next object to be picked up.
 func _on_item_detection_zone_body_entered(body : Node2D) -> void:
 	if body is OwenPickup:
@@ -137,5 +146,4 @@ func _on_item_detection_zone_body_exited(body:Node2D) -> void:
 func _on_click_action() -> void:
 	# This should be checked by caller, but no harm in checking here too.
 	if held_object != null:
-		var temp_held = held_object
-		temp_held.click_action()
+		held_object.click_action()
