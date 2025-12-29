@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://cavsyb8ckoehf"]
+
+[ext_resource type="Texture2D" uid="uid://dkn7y71bnryy8" path="res://addons/owens-godot-framework/tools/assets/basic_colors.png" id="1_cv5pf"]
+[ext_resource type="Script" uid="uid://bqsqpa8ckkin5" path="res://addons/owens-godot-framework/tools/scripts/systems/pickup_system/pickup.gd" id="1_lg7ly"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lg7ly"]
+
+[node name="BasePickup" type="RigidBody2D"]
+gravity_scale = 0.0
+script = ExtResource("1_lg7ly")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_lg7ly")
+
+[node name="Sprite2D" type="Sprite2D" parent="CollisionShape2D"]
+texture_filter = 1
+scale = Vector2(20, 20)
+texture = ExtResource("1_cv5pf")
+region_enabled = true
+region_rect = Rect2(0, 3, 1, 1)

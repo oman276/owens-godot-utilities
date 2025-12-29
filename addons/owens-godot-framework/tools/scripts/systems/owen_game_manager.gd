@@ -158,3 +158,10 @@ func _find_node_of_type(parent: Node, type: String) -> Node:
 		if result:
 			return result
 	return null
+
+
+func get_current_level_node() -> Node2D:
+	if current_level_node == null:
+		push_error("OwenGameManager: current_level_node is null, cannot get current level node.")
+		return null
+	return current_level_node

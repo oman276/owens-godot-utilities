@@ -12,18 +12,32 @@ Current Plugin Version: 1.0.0
 
 # Current Utilities
 
-## Owen Camera
+## Camera
 
 This is a simple 2D camera that can smoothly track nodes without the feeling that the camera is "glued" to the object. Best used for 2D action games.
 
-## Owen 2D Platformer Controller
+## 2D Platformer Controller
 
 This is a simple 2D Platformer Controller with the following features implemented:
 - Smooth Left to Right Movement and Jumping
 - Wall Jumps
 - Coyote Time
 - Jump Buffers
+- Sprinting
 
-## Owen Game Manager
+## Top-Down Controller
+
+This is a simple top down, 2D controller with the following features implemented:
+- Smooth 4-directional movement
+- Sprinting 
+- Dodging
+
+
+## Input Manager
+
+A safer wrapper for the Godot Input system which allows you to avoid hardcoding strings in your calls to the Godot Input system.
+
+## Game Manager
 
 This is a simple system for holding saved game information and managing the smooth loading and unloading of levels.
+

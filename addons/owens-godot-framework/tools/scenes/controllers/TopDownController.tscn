@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://dv2omdrmg3613"]
+[gd_scene load_steps=6 format=3 uid="uid://dv2omdrmg3613"]
 
 [ext_resource type="Script" uid="uid://c716ha5aqmeu7" path="res://addons/owens-godot-framework/tools/scripts/controllers/owen-top-down-controller.gd" id="1_spuii"]
 [ext_resource type="Texture2D" uid="uid://dkn7y71bnryy8" path="res://addons/owens-godot-framework/tools/assets/basic_colors.png" id="2_ibdpn"]
+[ext_resource type="PackedScene" uid="uid://bkesenuk8ifx1" path="res://addons/owens-godot-framework/tools/scenes/systems/pickup_system/PickupController.tscn" id="3_ibdpn"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xalop"]
 
@@ -32,3 +33,5 @@ texture = SubResource("AtlasTexture_kxeuq")
 metadata/_edit_group_ = true
 
 [node name="DodgeTimer" type="Timer" parent="."]
+
+[node name="PickupController" parent="." instance=ExtResource("3_ibdpn")]

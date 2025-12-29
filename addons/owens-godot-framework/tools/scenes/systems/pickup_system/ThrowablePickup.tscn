@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=3 uid="uid://dc4lwab8r8kmk"]
+
+[ext_resource type="PackedScene" uid="uid://cavsyb8ckoehf" path="res://addons/owens-godot-framework/tools/scenes/systems/pickup_system/BasePickup.tscn" id="1_buv0b"]
+[ext_resource type="Script" uid="uid://bnnbbth6vm113" path="res://addons/owens-godot-framework/tools/scripts/systems/pickup_system/throwable.gd" id="2_y2yt7"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_y2yt7"]
+friction = 0.8
+bounce = 0.3
+
+[node name="ThrowablePickup" instance=ExtResource("1_buv0b")]
+physics_material_override = SubResource("PhysicsMaterial_y2yt7")
+script = ExtResource("2_y2yt7")
+throw_force = 1000.0
+
+[node name="Sprite2D" parent="CollisionShape2D" index="0"]
+region_rect = Rect2(0, 4, 1, 1)
