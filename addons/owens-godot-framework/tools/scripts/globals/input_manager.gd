@@ -106,6 +106,24 @@ class Platformer2D:
 			MOVE_RIGHT	
 		)
 
+
+class Pickup:
+	const ACTIONS := {
+		"PICK_UP": "pickup_pick_up",
+		"DROP": "pickup_drop",
+		"CLICK_ACTION": "pickup_click_action",
+	}
+	static var PICK_UP: String:
+		get: return ACTIONS["PICK_UP"]
+	static var DROP: String:
+		get: return ACTIONS["DROP"]
+	static var CLICK_ACTION: String:
+		get: return ACTIONS["CLICK_ACTION"]
+	
+	## Returns all action strings for validation.
+	static func get_all_actions() -> Array:
+		return ACTIONS.values()
+
 class Debug:
 	## Single source of truth for all Debug input action strings.
 	const ACTIONS := {

@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://bkesenuk8ifx1"]
+
+[ext_resource type="Script" uid="uid://cmiotw10org6j" path="res://addons/owens-godot-framework/tools/scripts/systems/pickup_system/owen_pickup_controller.gd" id="1_6lywa"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_6lywa"]
+radius = 71.0
+
+[node name="PickupController" type="Node2D"]
+script = ExtResource("1_6lywa")
+
+[node name="HoldPoint" type="Node2D" parent="."]
+position = Vector2(60, 0)
+
+[node name="Item Detection Zone" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Item Detection Zone"]
+shape = SubResource("CircleShape2D_6lywa")
+
+[connection signal="body_entered" from="Item Detection Zone" to="." method="_on_item_detection_zone_body_entered"]
+[connection signal="body_exited" from="Item Detection Zone" to="." method="_on_item_detection_zone_body_exited"]

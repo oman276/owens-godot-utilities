@@ -158,3 +158,7 @@ func _find_node_of_type(parent: Node, type: String) -> Node:
 		if result:
 			return result
 	return null
+
+
+func get_current_level_node() -> Node2D:
+	return current_level_node
