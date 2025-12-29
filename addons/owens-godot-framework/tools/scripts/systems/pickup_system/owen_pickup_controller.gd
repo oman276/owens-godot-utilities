@@ -14,7 +14,7 @@ func _ready() -> void:
 
 func _process(_delta):
 	if held_object != null:
-		HoldPoint.look_at(get_global_mouse_position())
+		look_at(get_global_mouse_position())
 
 	#Input processing
 	if Input.is_action_just_pressed(OwenInputManager.Pickup.PICK_UP):
@@ -23,22 +23,29 @@ func _process(_delta):
 		_drop()
 	if Input.is_action_just_pressed(OwenInputManager.Pickup.CLICK_ACTION):
 		if held_object != null:
-			held_object.click_action(global_position, get_global_mouse_position())
+			held_object.click_action()
 
 func _pick_up():
+	print("Pick up input pressed")
 	var item = _pop_pickup_from_list()
 	if item != null:
+		print("Item found: ", item.name)
 		if held_object != null:
+			print("Dropped item: ", held_object.name)
 			_drop()
 			await get_tree().process_frame
+		print("Picking up item: ", item.name)
 		held_object = item
-		held_object.pick_up()
+		held_object.pick_up(self)	
+		print("Picked up item: ", held_object.name)
 
 		GameManager.custom_mouse_visible(true)
-
+		print("Mouse visible: true")
+		var original_scale = held_object.global_scale
 		if held_object.get_parent() != null:
 			GameManager.get_current_level_node().remove_child(held_object)
 		HoldPoint.add_child(held_object)
+		held_object.global_scale = original_scale
 		held_object.global_position = HoldPoint.global_position
 		held_object.rotation = 0
 
@@ -46,15 +53,21 @@ func drop() -> Node2D:
 	return _drop()
 
 func _drop() -> Node2D:
+	print("Drop input pressed")
 	if held_object != null:
+		print("Dropping item: ", held_object.name)
+		var original_scale = held_object.global_scale
 		HoldPoint.remove_child(held_object)
 		GameManager.get_current_level_node().add_child(held_object)
+		held_object.global_scale = original_scale
 		held_object.global_position = HoldPoint.global_position
 		held_object.rotation = 0
 		held_object.drop()
+		print("Dropped item: ", held_object.name)
 		var original_held = held_object
 		held_object = null
-		GameManager.mouse_visible(false)
+		GameManager.custom_mouse_visible(false)
+		print("Mouse visible: false")
 		return original_held
 	return null
 
@@ -101,4 +114,4 @@ func _on_click_action() -> void:
 	print("Click action")
 	if held_object != null:
 		var temp_held = held_object
-		temp_held.click_action(global_position, get_global_mouse_position())
+		temp_held.click_action()

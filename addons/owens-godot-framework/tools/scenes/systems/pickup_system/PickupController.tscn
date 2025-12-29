@@ -11,10 +11,7 @@ script = ExtResource("1_6lywa")
 [node name="HoldPoint" type="Node2D" parent="."]
 position = Vector2(60, 0)
 
-[node name="Item Detection Zone" type="Area2D" parent="."]
+[node name="ItemDetectionZone" type="Area2D" parent="."]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Item Detection Zone"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ItemDetectionZone"]
 shape = SubResource("CircleShape2D_6lywa")
-
-[connection signal="body_entered" from="Item Detection Zone" to="." method="_on_item_detection_zone_body_entered"]
-[connection signal="body_exited" from="Item Detection Zone" to="." method="_on_item_detection_zone_body_exited"]

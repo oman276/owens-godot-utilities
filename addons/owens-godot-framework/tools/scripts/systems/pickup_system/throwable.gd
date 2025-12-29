@@ -2,17 +2,19 @@ extends OwenPickup
 class_name OwenPickupThrowable
 
 @export var throw_force : float = 1000.0
-var parent_player : OwenPickupController
 
-func click_action(player_pos : Vector2, mouse_pos : Vector2):
-	parent_player.drop()
-	super.click_action(player_pos, mouse_pos)
+func click_action():
+	var mouse_pos = get_global_mouse_position()
+	var player_pos = parent_controller.global_position
+	
+	parent_controller.drop()
+	super.click_action()
+	
 	var direction = (mouse_pos - player_pos).normalized()
 	apply_impulse(direction * throw_force)
 
-func pick_up():
-	super.pick_up()
-	parent_player = player
+func pick_up(_parent_controller : OwenPickupController):
+	super.pick_up(_parent_controller)
 
 func drop():
 	super.drop()

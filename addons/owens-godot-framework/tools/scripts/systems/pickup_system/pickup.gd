@@ -1,14 +1,13 @@
 extends RigidBody2D
 class_name OwenPickup
 
-var base_scale : Vector2 = Vector2(1, 1)
-@export var held_scale : Vector2 = Vector2(1, 1)
-var player_parent : Node2D = null
+var parent_controller : OwenPickupController = null
 
-func click_action(player_pos : Vector2, mouse_pos : Vector2):
+func click_action():
 	pass
 
-func pick_up():
+func pick_up(_parent_controller : OwenPickupController):
+	parent_controller = _parent_controller
 	freeze = true
 	set_collision_layer_value(1, false)  # Disable collision layer 1
 	set_collision_layer_value(2, false)  # Disable collision layer 2
@@ -16,6 +15,7 @@ func pick_up():
 	set_collision_mask_value(2, false)   # Disable collision mask 2
 
 func drop():
+	parent_controller = null
 	freeze = false
 	set_collision_layer_value(1, true)   # Re-enable collision layer 1
 	set_collision_layer_value(2, true)   # Re-enable collision layer 2
