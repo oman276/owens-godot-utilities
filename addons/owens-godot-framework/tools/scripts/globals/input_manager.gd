@@ -4,8 +4,8 @@ class_name OwenInputManager
 # OwenInputManager
 # A centralized manager for all input action strings in Owen's Godot Framework.
 # This provides type-safe access to input actions and validates they exist in the InputMap.
-# version 1.2.0
-# last updated: 2025-12-27
+# version 1.2.1
+# last updated: 2025-12-30
 
 ## If enabled, missing input actions will throw errors instead of warnings.
 ## Recommended to enable during development, disable for production builds.
@@ -127,7 +127,7 @@ class Pickup:
 class Debug:
 	## Single source of truth for all Debug input action strings.
 	const ACTIONS := {
-		"RELOAD_CURRENT_LEVEL": "reload_current_level",
+		"RELOAD_CURRENT_LEVEL": "debug_reload_current_level",
 	}
 	
 	# Read-only accessors for clean external API
