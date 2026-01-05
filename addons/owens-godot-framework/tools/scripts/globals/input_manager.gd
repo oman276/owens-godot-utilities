@@ -23,6 +23,8 @@ const validate_topdown: bool = true
 const validate_platformer: bool = true
 ## Whether to validate Debug input actions on startup.
 const validate_debug: bool = true
+## Whether to validate MeleeAttack input actions on startup.
+const validate_melee_attack: bool = true
 
 # ============================================================================
 # INPUT ACTION CONSTANTS
@@ -124,6 +126,20 @@ class Pickup:
 	static func get_all_actions() -> Array:
 		return ACTIONS.values()
 
+class MeleeAttack:
+	## Single source of truth for all MeleeAttack input action strings.
+	const ACTIONS := {
+		"ATTACK": "melee_attack",
+	}
+	
+	# Read-only accessors for clean external API
+	static var ATTACK: String:
+		get: return ACTIONS["ATTACK"]
+	
+	## Returns all action strings for validation.
+	static func get_all_actions() -> Array:
+		return ACTIONS.values()
+
 class Debug:
 	## Single source of truth for all Debug input action strings.
 	const ACTIONS := {
@@ -165,6 +181,11 @@ func _validate_all_input_actions() -> void:
 		all_valid = _validate_category("Debug", Debug.get_all_actions()) and all_valid
 	else:
 		print("- Debug: skipped (validation disabled)")
+	
+	if validate_melee_attack:
+		all_valid = _validate_category("MeleeAttack", MeleeAttack.get_all_actions()) and all_valid
+	else:
+		print("- MeleeAttack: skipped (validation disabled)")
 
 	print("========================================")
 	
@@ -210,6 +231,7 @@ func print_all_actions() -> void:
 	print("========================================")
 	_print_category_actions("TopDown", TopDown.get_all_actions())
 	_print_category_actions("Platformer", Platformer2D.get_all_actions())
+	_print_category_actions("MeleeAttack", MeleeAttack.get_all_actions())
 	_print_category_actions("Debug", Debug.get_all_actions())
 	print("========================================")
 
