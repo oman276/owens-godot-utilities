@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3 uid="uid://r3ubt6xhdjdx"]
+
+[ext_resource type="Script" uid="uid://dmbsq87bimce" path="res://addons/owens-godot-framework/tools/scripts/fx/OneShotParticle.gd" id="1_p8bmf"]
+[ext_resource type="PackedScene" uid="uid://b7gawp646orqe" path="res://addons/owens-godot-framework/tools/scenes/fx/vfx/BurstParticles.tscn" id="2_5gexf"]
+
+[node name="OneShotParticle" type="Node2D"]
+script = ExtResource("1_p8bmf")
+particle_effect_scene = ExtResource("2_5gexf")

@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://dx3c3tuys3m1d"]
+
+[ext_resource type="Texture2D" uid="uid://b3dpue457snhm" path="res://addons/owens-godot-framework/tools/assets/basic_colors.png" id="1_fsntq"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dsry3"]
+atlas = ExtResource("1_fsntq")
+region = Rect2(0, 0, 1, 1)
+
+[node name="BasicColorTile" type="Sprite2D"]
+texture_filter = 1
+texture = SubResource("AtlasTexture_dsry3")
