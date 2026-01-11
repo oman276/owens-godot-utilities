@@ -10,15 +10,16 @@ size = Vector2(96, 84)
 atlas = ExtResource("2_50bak")
 region = Rect2(1, 1, 1, 1)
 
-[node name="Destructible" type="Node2D"]
+[node name="Destructible" type="RigidBody2D"]
+mass = 1000.0
+gravity_scale = 0.0
+freeze = true
 script = ExtResource("1_18p8x")
 
-[node name="Area2D" type="Area2D" parent="."]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_18p8x")
 
-[node name="Sprite2D" type="Sprite2D" parent="Area2D"]
+[node name="Sprite2D" type="Sprite2D" parent="CollisionShape2D"]
 texture_filter = 1
 position = Vector2(-1.847744e-06, 9.536743e-07)
 scale = Vector2(92.00001, 80)

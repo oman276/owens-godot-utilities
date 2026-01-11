@@ -5,20 +5,7 @@ class_name OwenMeleeAttack
 # A simple melee attack controller for 2D games.
 # Detects objects within an Area2D zone and damages OwenDestructible components.
 # version 1.0.0
-# last updated: 2025-12-30
-
-# ============================================================================
-# SIGNALS
-# ============================================================================
-
-# ## Emitted when an attack is executed (useful for animations/sounds).
-# signal attack_executed
-# ## Emitted for each destructible that was hit during an attack.
-# signal hit_destructible(destructible: OwenDestructible)
-
-# ============================================================================
-# EXPORTED PROPERTIES
-# ============================================================================
+# last updated: 2026-01-04
 
 ## Amount of damage dealt per attack.
 @export var damage: float = 200.0
@@ -26,10 +13,6 @@ class_name OwenMeleeAttack
 @export var cooldown_duration: float = 0.5
 ## Whether the controller should process input. Set to false to disable input controls.
 @export var input_enabled: bool = true
-
-# ============================================================================
-# NODE REFERENCES
-# ============================================================================
 
 ## The Area2D used to detect objects in attack range.
 ## Expected to have a CollisionShape2D child with the desired attack shape.
@@ -48,6 +31,8 @@ func _process(_delta: float) -> void:
 	# Skip input processing if disabled
 	if not input_enabled:
 		return
+	
+	look_at(get_global_mouse_position())
 	
 	# Check for attack input
 	if Input.is_action_just_pressed(OwenInputManager.MeleeAttack.ATTACK):
