@@ -47,7 +47,6 @@ func attack() -> bool:
 func is_attack_ready() -> bool:
 	return CooldownTimer.is_stopped()
 
-
 ## Internal function that performs the attack logic.
 func _execute_attack() -> bool:
 	
@@ -55,14 +54,17 @@ func _execute_attack() -> bool:
 
 	# Check cooldown
 	if not is_attack_ready():
+		print("failed on cooldown")
 		push_warning("OwenMeleeAttack: Cannot attack - not on cooldown.")
 		return false
 	
 	# Get all bodies currently overlapping the attack zone
 	if AttackZone == null:
+		print("no attack zone")
 		push_warning("OwenMeleeAttack: Cannot attack - AttackZone is null.")
 		return false
 	
+	print("about to attack")
 	var bodies = AttackZone.get_overlapping_bodies()
 	print("OwenMeleeAttack: Found ", bodies.size(), " bodies overlapping the attack zone.")
 	# Process each body to find destructibles
@@ -98,3 +100,10 @@ func _find_destructible(node: Node) -> OwenDestructible:
 func _start_cooldown() -> void:
 	CooldownTimer.stop()
 	CooldownTimer.start(cooldown_duration)
+	CooldownTimer.timeout.connect(_on_cooldown_complete)
+
+## Callback for when the cooldown timer completes.
+func _on_cooldown_complete() -> void:
+	print("OwenMeleeAttack: Cooldown complete, attack ready.")	
+	CooldownTimer.timeout.disconnect(_on_cooldown_complete)
+	CooldownTimer.stop()
