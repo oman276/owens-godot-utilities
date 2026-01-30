@@ -25,7 +25,7 @@ func destroy():
     if particles_on_destruction:
         var particles = particles_on_destruction.instantiate() as OwenOneShotParticle
         if particles:
-            get_tree().get_current_scene().add_child(particles)
+            GameManager.get_current_level_node().add_child(particles)
             particles.global_position = global_position
 
     if root_node:
